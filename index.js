@@ -1,12 +1,19 @@
 var list = require('postcss/lib/list');
 
+var getParentSelector = function (node) {
+    return node && node.parent && node.parent.nodes[0].selector;
+};
+
 var selector = function (parent, node) {
+    var parentSelector = getParentSelector(parent);
     return list.comma(parent.selector)
         .map(function (i) {
             return list.comma(node.selector)
                 .map(function (j) {
                     if ( j.indexOf('&') == -1 ) {
                         return i + ' ' + j;
+                    } else if ( j.indexOf('&&') != -1 ) {
+                        return j.replace(/&{2}/g, parentSelector).replace(/&/g, i);
                     } else {
                         return j.replace(/&/g, i);
                     }

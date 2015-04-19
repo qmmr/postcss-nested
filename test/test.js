@@ -102,7 +102,32 @@ describe('postcss-nested', function () {
         check(input, output);
     });
 
-    it('works as function', function() {
+    it('should replace `&&` selector with parent selector', function () {
+        var input = '.item {\n' +
+                    '    display: block;\n' +
+                    '    &__view {\n' +
+                    '        display: block;\n' +
+                    '    }\n' +
+                    '    &--edit {\n' +
+                    '        & &&__view {\n' +
+                    '            display: none;\n' +
+                    '        }\n' +
+                    '    }\n' +
+                    '}\n';
+        var output = '.item {\n' +
+                     '    display: block\n' +
+                     '}\n' +
+                     '.item__view {\n' +
+                     '    display: block;\n' +
+                     '}\n' +
+                     '.item--edit .item__view {\n' +
+                     '    display: none;\n' +
+                     '}\n';
+
+        check(input, output);
+    });
+
+    it('works as function', function () {
         var process = postcss(nested());
         expect( process.process('a { b {} }').css ).to.equal('a b {}');
     });
